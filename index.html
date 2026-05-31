@@ -1,0 +1,985 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vivian Bernstein — The Bernstein Method</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+
+    :root {
+      --bg: #0a0a0a;
+      --bg-card: #111111;
+      --bg-card-pop: #16130c;
+      --gold: #c9a84c;
+      --gold-light: #d4b65e;
+      --gold-dark: #a88a3a;
+      --gold-glow: rgba(201, 168, 76, 0.2);
+      --red: #c41e1e;
+      --white: #ffffff;
+      --text: #e8e0d0;
+      --text-dim: #999999;
+      --text-muted: #666666;
+      --border: rgba(255,255,255,0.07);
+      --border-gold: rgba(201,168,76,0.25);
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Fade-in animation ── */
+    .fade-in {
+      opacity: 0;
+      transform: translateY(24px);
+      transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+    }
+    .fade-in.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .fade-in.delay-1 { transition-delay: 0.1s; }
+    .fade-in.delay-2 { transition-delay: 0.2s; }
+    .fade-in.delay-3 { transition-delay: 0.3s; }
+    .fade-in.delay-4 { transition-delay: 0.4s; }
+
+    /* ── Float animation for hero image ── */
+    @keyframes float {
+      0%, 100% { transform: translateY(0px); }
+      50% { transform: translateY(-8px); }
+    }
+
+    /* ── Container ── */
+    .wrap { max-width: 680px; margin: 0 auto; padding: 0 20px; }
+
+    /* ════════════════════════════════════════
+       PREMIUM HEADER (Omar-style)
+    ════════════════════════════════════════ */
+    .premium-header {
+      text-align: center;
+      padding: 48px 20px 40px;
+      background: linear-gradient(180deg, #0c0a06 0%, #0e0c08 100%);
+      
+    }
+    .premium-header .crown {
+      font-size: 36px;
+      margin-bottom: 12px;
+      filter: drop-shadow(0 0 12px rgba(201,168,76,0.4));
+    }
+    .premium-header .brand-label {
+      font-family: 'Inter', sans-serif;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 5px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .premium-header .headline {
+      font-family: 'Playfair Display', serif;
+      font-size: 30px;
+      font-weight: 700;
+      color: #c9a84c;
+      line-height: 1.3;
+      margin-bottom: 18px;
+      text-shadow: 0 0 20px rgba(201,168,76,0.3), 0 0 40px rgba(201,168,76,0.1);
+    }
+    .premium-header .sub1 {
+      font-size: 14px;
+      color: var(--text-dim);
+      margin-bottom: 4px;
+      line-height: 1.6;
+    }
+    .premium-header .sub2 {
+      font-size: 15px;
+      color: var(--gold);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+    .premium-header .sub2 strong {
+      color: var(--gold-light);
+    }
+    .premium-header .sub3 {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .premium-header .sub3 strong {
+      color: var(--text);
+    }
+    @media (min-width: 640px) {
+      .premium-header .headline { font-size: 38px; }
+      .premium-header .sub1 { font-size: 15px; }
+      .premium-header .sub2 { font-size: 16px; }
+      .premium-header .sub3 { font-size: 14px; }
+      .premium-header { padding: 56px 20px 48px; }
+    }
+
+    /* ════════════════════════════════════════
+       HERO
+    ════════════════════════════════════════ */
+    .hero {
+      text-align: center;
+      padding: 40px 20px 0;
+      background: linear-gradient(180deg, #0e0c08 0%, var(--bg) 100%);
+    }
+    .hero-img-wrap {
+      width: 100%;
+      max-width: 600px;
+      margin: 0 auto 24px;
+      border-radius: 14px;
+      overflow: hidden;
+      border: 2px solid var(--border-gold);
+      box-shadow: 0 12px 48px rgba(201,168,76,0.15), 0 0 0 1px rgba(201,168,76,0.08);
+      animation: float 4s ease-in-out infinite;
+    }
+    .hero-img-wrap img {
+      width: 100%;
+      max-height: 650px;
+      object-fit: cover;
+      object-position: center 30%;
+      display: block;
+    }
+
+    /* ── Character info below image ── */
+    .hero-info {
+      text-align: center;
+      padding: 0 20px 24px;
+    }
+    .hero-name {
+      font-family: 'Playfair Display', serif;
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--white);
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    /* ── Stat boxes (3 separate gold-bordered boxes) ── */
+    .hero-stats-boxes {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+    }
+    .stat-box {
+      display: inline-block;
+      padding: 8px 18px;
+      border: 1px solid #c9a84c;
+      border-radius: 6px;
+      background: rgba(201,168,76,0.08);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      color: #c9a84c;
+      font-family: 'Inter', sans-serif;
+      font-size: 13px;
+      font-weight: 600;
+      text-align: center;
+      line-height: 1.4;
+    }
+    .stat-box strong {
+      font-size: 16px;
+      color: var(--gold-light);
+    }
+    .stat-label {
+      font-size: 10px;
+      font-weight: 500;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* ── Profile trust circle ── */
+    .profile-trust {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 12px;
+      margin-top: 4px;
+    }
+    .profile-circle {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 2px solid var(--gold);
+      object-fit: cover;
+    }
+    .profile-trust strong {
+      font-size: 14px;
+      color: var(--white);
+    }
+
+    /* ── Hero-offer separator line ── */
+
+    /* ── Red banner strip at top ── */
+    .red-banner {
+      background: #c41e1e;
+      color: #ffffff;
+      text-align: center;
+      padding: 8px 16px;
+      font-family: 'Inter', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+    .censored-badge {
+      display: inline-block;
+      padding: 2px 8px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 3px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 2px;
+    }
+
+    /* ════════════════════════════════════════
+       OFFER HEADER
+    ════════════════════════════════════════ */
+    .offer-header {
+      text-align: center;
+      padding: 0 20px 20px;
+    }
+    .offer-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--gold);
+      margin-bottom: 6px;
+    }
+    .offer-sub {
+      font-size: 13px;
+      color: var(--text-dim);
+      margin-bottom: 16px;
+    }
+    .stars {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 14px;
+    }
+    .stars-icons { color: var(--gold); font-size: 16px; letter-spacing: 2px; }
+    .stars-text { color: var(--text-dim); font-size: 13px; }
+
+    /* ════════════════════════════════════════
+       PRICING CARDS
+    ════════════════════════════════════════ */
+    .pricing {
+      padding: 20px 20px 8px;
+    }
+    .pricing .wrap { display: flex; flex-direction: column; gap: 12px; }
+
+    .price-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      cursor: pointer;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease, transform 0.3s ease;
+      position: relative;
+    }
+    .price-card:hover {
+      border-color: var(--border-gold);
+      box-shadow: 0 0 20px rgba(201,168,76,0.3);
+      transform: scale(1.02);
+    }
+    .price-card.featured {
+      background: var(--bg-card-pop);
+      border-color: var(--gold);
+      border-width: 2px;
+      box-shadow: 0 0 28px rgba(201,168,76,0.18), 0 0 0 1px rgba(201,168,76,0.1);
+    }
+    .price-card.featured:hover {
+      box-shadow: 0 0 32px rgba(201,168,76,0.35), 0 0 0 1px rgba(201,168,76,0.2);
+      transform: scale(1.02);
+    }
+
+    .card-badge {
+      position: absolute;
+      top: -1px;
+      right: 16px;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border-radius: 0 0 6px 6px;
+    }
+    .badge-popular { background: var(--gold); color: #0a0a0a; }
+    .badge-value { background: var(--gold); color: #0a0a0a; }
+
+    .card-radio {
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      border: 2px solid var(--text-muted);
+      flex-shrink: 0;
+      margin-top: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: border-color 0.2s;
+    }
+    .price-card.featured .card-radio {
+      border-color: var(--gold);
+    }
+    .price-card.featured .card-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+
+    /* ── Selected state (dynamic) ── */
+    .price-card.selected {
+      border-color: var(--gold);
+      border-width: 2px;
+      box-shadow: 0 0 28px rgba(201,168,76,0.18), 0 0 0 1px rgba(201,168,76,0.1);
+      background: var(--bg-card-pop);
+    }
+    .price-card.selected .card-radio {
+      border-color: var(--gold);
+    }
+    .price-card.selected .card-radio::after {
+      content: '';
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: var(--gold);
+    }
+    .price-card.selected .card-price { color: var(--gold); }
+
+    /* When not selected, remove featured styling for radio */
+    .price-card:not(.selected) .card-radio::after {
+      display: none;
+    }
+    .price-card:not(.selected) .card-radio {
+      border-color: var(--text-muted);
+    }
+    .price-card:not(.selected) .card-price {
+      color: var(--white);
+    }
+    .price-card:not(.selected):not(:hover) {
+      border-color: var(--border);
+      border-width: 1px;
+      box-shadow: none;
+      background: var(--bg-card);
+    }
+
+    .card-body { flex: 1; min-width: 0; }
+    .card-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 4px;
+    }
+    .card-name {
+      font-weight: 600;
+      font-size: 15px;
+      color: var(--white);
+    }
+    .card-price-area {
+      text-align: right;
+      flex-shrink: 0;
+    }
+    .card-old-price {
+      font-size: 13px;
+      color: var(--text-muted);
+      text-decoration: line-through;
+    }
+    .card-price {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--white);
+    }
+    .price-card.featured .card-price { color: var(--gold); }
+
+    .card-desc {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-bottom: 8px;
+    }
+    .card-bullets {
+      list-style: none;
+      padding: 0;
+    }
+    .card-bullets li {
+      font-size: 12px;
+      color: var(--text-dim);
+      padding: 2px 0;
+      padding-left: 16px;
+      position: relative;
+    }
+    .card-bullets li::before {
+      content: '\2713';
+      position: absolute;
+      left: 0;
+      color: var(--gold);
+      font-size: 11px;
+    }
+    .card-bullets strong { color: var(--text); }
+
+    /* ════════════════════════════════════════
+       CTA BUTTON
+    ════════════════════════════════════════ */
+    .cta-section {
+      padding: 24px 20px 12px;
+      text-align: center;
+    }
+    .cta-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      width: 100%;
+      max-width: 480px;
+      padding: 16px 32px;
+      background: linear-gradient(135deg, var(--gold-dark), var(--gold), var(--gold-light));
+      color: #0a0a0a;
+      font-weight: 700;
+      font-size: 15px;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      text-decoration: none;
+      transition: transform 0.2s, box-shadow 0.2s;
+      animation: pulse-glow 2.5s ease-in-out infinite;
+    }
+    .cta-btn:hover {
+      transform: scale(1.02);
+      box-shadow: 0 0 30px rgba(201,168,76,0.4);
+    }
+    @keyframes pulse-glow {
+      0%, 100% { box-shadow: 0 0 12px rgba(201,168,76,0.2); }
+      50% { box-shadow: 0 0 24px rgba(201,168,76,0.35); }
+    }
+    .trust-line {
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: 10px;
+    }
+
+    /* ════════════════════════════════════════
+       URGENCY BAR
+    ════════════════════════════════════════ */
+    .urgency {
+      margin: 24px 20px;
+      max-width: 680px;
+      margin-left: auto;
+      margin-right: auto;
+      background: var(--red);
+      border-radius: 8px;
+      padding: 14px 20px;
+      text-align: center;
+    }
+    .urgency-text {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--white);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+    }
+    .urgency-text strong { text-decoration: underline; }
+    .progress-bar {
+      width: 100%;
+      height: 6px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--gold), #fff);
+      border-radius: 3px;
+      transition: width 1.5s ease-out;
+    }
+    .progress-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.7);
+      margin-top: 4px;
+    }
+
+    /* ════════════════════════════════════════
+       TRUST BADGES
+    ════════════════════════════════════════ */
+    .trust-badges {
+      display: flex;
+      justify-content: center;
+      flex-wrap: wrap;
+      gap: 16px;
+      padding: 12px 20px 24px;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+    .trust-badges span { white-space: nowrap; }
+
+    /* ════════════════════════════════════════
+       TESTIMONIALS
+    ════════════════════════════════════════ */
+    .testimonials {
+      padding: 24px 20px;
+    }
+    .testimonials .wrap { display: flex; flex-direction: column; gap: 12px; }
+    .test-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 18px 20px;
+      transition: border-color 0.3s ease, box-shadow 0.3s ease;
+    }
+    .test-card:hover {
+      border-color: var(--border-gold);
+      box-shadow: 0 0 12px rgba(201,168,76,0.1);
+    }
+    .test-stars { color: var(--gold); font-size: 13px; letter-spacing: 1px; margin-bottom: 8px; }
+    .test-quote {
+      font-size: 14px;
+      color: var(--text);
+      font-style: italic;
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+    .test-author {
+      font-size: 12px;
+      color: var(--text-dim);
+      font-weight: 600;
+    }
+
+    /* ════════════════════════════════════════
+       FAQ ACCORDION
+    ════════════════════════════════════════ */
+    .faq {
+      padding: 32px 20px;
+    }
+    .faq-title {
+      font-family: 'Playfair Display', serif;
+      font-size: 22px;
+      font-weight: 600;
+      color: var(--white);
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .faq-item {
+      border-bottom: 1px solid var(--border);
+    }
+    .faq-q {
+      width: 100%;
+      background: none;
+      border: none;
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      font-size: 14px;
+      font-weight: 500;
+      text-align: left;
+      padding: 16px 0;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      transition: color 0.2s;
+    }
+    .faq-q:hover { color: var(--gold); }
+    .faq-icon {
+      flex-shrink: 0;
+      width: 20px;
+      height: 20px;
+      position: relative;
+      transition: transform 0.3s;
+    }
+    .faq-icon::before, .faq-icon::after {
+      content: '';
+      position: absolute;
+      background: var(--text-dim);
+      border-radius: 1px;
+      transition: transform 0.3s, background 0.3s;
+    }
+    .faq-icon::before {
+      width: 12px; height: 2px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .faq-icon::after {
+      width: 2px; height: 12px;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+    }
+    .faq-item.open .faq-icon::after { transform: translate(-50%, -50%) rotate(90deg); }
+    .faq-item.open .faq-icon::before, .faq-item.open .faq-icon::after { background: var(--gold); }
+
+    .faq-a {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.35s ease, padding 0.35s ease;
+      padding: 0 0;
+    }
+    .faq-item.open .faq-a {
+      max-height: 200px;
+      padding: 0 0 16px;
+    }
+    .faq-a p {
+      font-size: 13px;
+      color: var(--text-dim);
+      line-height: 1.7;
+    }
+
+    /* ════════════════════════════════════════
+       FOOTER
+    ════════════════════════════════════════ */
+    .footer {
+      text-align: center;
+      padding: 32px 20px;
+      border-top: 1px solid var(--border);
+    }
+    .footer-links {
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      margin-bottom: 12px;
+    }
+    .footer-links a {
+      font-size: 12px;
+      color: var(--text-muted);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--gold); }
+    .footer-copy {
+      font-size: 11px;
+      color: var(--text-muted);
+    }
+
+    /* ════════════════════════════════════════
+       RESPONSIVE
+    ════════════════════════════════════════ */
+    @media (min-width: 640px) {
+      .hero-img-wrap { max-width: 640px; }
+      .hero-img-wrap img { max-height: 780px; }
+      .hero-name { font-size: 38px; }
+      .stat-box { padding: 10px 22px; font-size: 14px; }
+      .stat-box strong { font-size: 18px; }
+      .stat-label { font-size: 11px; }
+      .offer-title { font-size: 26px; }
+      .card-name { font-size: 16px; }
+      .card-price { font-size: 28px; }
+      .cta-btn { font-size: 16px; padding: 18px 40px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══════ RED BANNER ══════ -->
+  <div class="red-banner">
+    <span class="censored-badge">RESTRICTED</span>
+    <span>THEY TRIED TO SILENCE THIS BOOK. IT FOUND YOU ANYWAY.</span>
+  </div>
+
+  <!-- ══════ PREMIUM HEADER ══════ -->
+  <section class="premium-header fade-in">
+    <div class="crown">
+      <svg class="crown-icon" width="48" height="32" viewBox="0 0 48 32" fill="none">
+        <path d="M24 0L30 12L42 8L36 28H12L6 8L18 12L24 0Z" fill="#c9a84c"/>
+        <rect x="10" y="28" width="28" height="4" rx="1" fill="#c9a84c"/>
+      </svg>
+    </div>
+    <p class="brand-label">VIVIAN BERNSTEIN</p>
+    <h1 class="headline">The Secret Old-Money Women<br>Have Known for Generations</h1>
+    <p class="sub1">Vivian Bernstein Reveals The Classified Wealth Playbook &mdash;</p>
+    <p class="sub2"><strong>Just To Prove Anyone Can Become Rich.</strong></p>
+    <p class="sub3">Over <strong>23+ Modules</strong> Of Old-Money Strategies Families Have Quietly Used<br>For Generations.</p>
+  </section>
+
+  <!-- ══════ HERO ══════ -->
+  <section class="hero fade-in">
+    <div class="hero-img-wrap">
+      <img src="vivian_bernstein_hero.jpg" alt="Vivian Bernstein — The Bernstein Method" loading="eager">
+    </div>
+  </section>
+
+  <!-- ── Character Info ── -->
+  <section class="hero-info fade-in delay-1">
+    <h1 class="hero-name">Vivian Bernstein</h1>
+    <div class="hero-stats-boxes">
+      <span class="stat-box"><strong>4,847</strong><br><span class="stat-label">copies sold</span></span>
+      <span class="stat-box"><strong>23+</strong><br><span class="stat-label">modules</span></span>
+      <span class="stat-box"><strong>4.9 &#9733;</strong><br><span class="stat-label">average rating</span></span>
+    </div>
+    <div class="profile-trust">
+      <img src="vivian_face.jpg" class="profile-circle" alt="Vivian Bernstein">
+      <div>
+        <strong>Vivian Bernstein</strong><br>
+        <span style="color:#999;font-size:13px;">Trusted by thousands worldwide</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── Separator between hero and offer ── -->
+
+  <!-- ══════ OFFER HEADER ══════ -->
+  <section class="offer-header fade-in delay-2">
+    <h2 class="offer-title">Your Financial Freedom Starts Here</h2>
+    <p class="offer-sub">Price goes up after 5,000 downloads. Choose your level.</p>
+    <div class="stars">
+      <span class="stars-icons">&#9733;&#9733;&#9733;&#9733;&#9733;</span>
+      <span class="stars-text">4.9 out of 5 &middot; 4,847 downloads</span>
+    </div>
+  </section>
+
+  <!-- ══════ PRICING CARDS ══════ -->
+  <section class="pricing">
+    <div class="wrap">
+
+      <!-- Tier 1 — MAIN BOOK -->
+      <div class="price-card fade-in delay-1" data-tier="0" onclick="selectTier(0)">
+        <span class="card-badge badge-popular">MOST POPULAR</span>
+        <div class="card-radio"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-name">The Bernstein Method</span>
+            <div class="card-price-area">
+              <span class="card-old-price">$94</span>
+              <span class="card-price">$27</span>
+            </div>
+          </div>
+          <p class="card-desc">The book everyone starts with.</p>
+          <ul class="card-bullets">
+            <li>The Bernstein Method ebook <strong>(240 pages)</strong></li>
+            <li>21 chapters of <strong>old-money women's wealth strategies</strong></li>
+            <li>Instant digital delivery</li>
+          </ul>
+        </div>
+      </div>
+
+      <!-- Tier 2 — FEATURED / BEST VALUE -->
+      <div class="price-card featured fade-in delay-2 selected" data-tier="1" onclick="selectTier(1)">
+        <span class="card-badge badge-value">BEST VALUE</span>
+        <div class="card-radio"></div>
+        <div class="card-body">
+          <div class="card-top">
+            <span class="card-name">The Complete Bernstein System</span>
+            <div class="card-price-area">
+              <span class="card-old-price">$294</span>
+              <span class="card-price">$77</span>
+            </div>
+          </div>
+          <p class="card-desc">All 5 books. Every resource. Nothing held back.</p>
+          <ul class="card-bullets">
+            <li>Everything in The Bernstein Method</li>
+            <li>The Bernstein Real Estate Code &mdash; <strong>generational wealth through property</strong></li>
+            <li>The Bernstein Tax Playbook &mdash; <strong>legally keep more of what you earn</strong></li>
+            <li>Asset Protection &amp; <strong>family office strategies</strong></li>
+            <li><strong>Lifetime access</strong> to all future updates</li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════ CTA ══════ -->
+  <section class="cta-section fade-in delay-2">
+    <a id="cta-btn" href="https://checkout.dodopayments.com/buy/pdt_0NbRK1U7wmZA9kZk7jast?quantity=1&redirect_url=https://thejamesspencer.org" target="_blank" class="cta-btn">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span id="cta-text">GET THE COMPLETE SYSTEM &mdash; $77</span>
+    </a>
+    <p class="trust-line">Instant download &middot; Yours forever</p>
+  </section>
+
+  <!-- ══════ URGENCY BAR ══════ -->
+  <div class="urgency fade-in delay-3" id="urgency-bar">
+    <p class="urgency-text">Price <strong>goes back to full price</strong> after 5,000 downloads</p>
+    <div class="progress-bar">
+      <div class="progress-fill" id="progress-fill"></div>
+    </div>
+    <p class="progress-label">4,847 / 5,000</p>
+  </div>
+
+  <!-- ══════ TRUST BADGES ══════ -->
+  <div class="trust-badges fade-in delay-3">
+    <span>&#128274; SECURE</span>
+    <span>&#9889; INSTANT</span>
+    <span>&#9989; FOREVER</span>
+    <span>&#128230; 4,847+ SOLD</span>
+  </div>
+
+  <!-- ══════ TESTIMONIALS ══════ -->
+  <section class="testimonials">
+    <div class="wrap">
+
+      <div class="test-card fade-in">
+        <div class="test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="test-quote">"I made back the $47 within my first week. The real estate section alone is worth 10x the price. This changed how I think about money."</p>
+        <p class="test-author">Marcus T. &mdash; Atlanta, GA</p>
+      </div>
+
+      <div class="test-card fade-in delay-1">
+        <div class="test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="test-quote">"Finally, someone who explains wealth building without the fluff. Straight to the point. I've read dozens of finance books and this is the only one I actually used."</p>
+        <p class="test-author">Sarah K. &mdash; Los Angeles, CA</p>
+      </div>
+
+      <div class="test-card fade-in delay-2">
+        <div class="test-stars">&#9733;&#9733;&#9733;&#9733;&#9733;</div>
+        <p class="test-quote">"The tax playbook saved me more this year than I spent on the entire system. Wish I had this 5 years ago."</p>
+        <p class="test-author">David R. &mdash; Miami, FL</p>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════ FAQ ══════ -->
+  <section class="faq">
+    <div class="wrap">
+      <h3 class="faq-title fade-in">Frequently Asked Questions</h3>
+
+      <div class="faq-item fade-in">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What exactly do I get?</span>
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-a">
+          <p>Depending on your tier, you get 1 to 5 complete digital systems covering wealth building, real estate investing, tax strategies, estate protection, and the wealth commandments. All delivered as instant digital downloads you keep forever.</p>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in delay-1">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Is this a physical book or digital?</span>
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-a">
+          <p>100% digital. You get instant access the moment you purchase. Download to any device &mdash; phone, tablet, or computer. No waiting for shipping.</p>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in delay-1">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Will the price really go up?</span>
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-a">
+          <p>Yes. Once we hit 5,000 downloads, the introductory pricing ends and all tiers return to full price. We're currently at 4,847 downloads.</p>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in delay-2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>Do I need any experience with investing?</span>
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-a">
+          <p>Not at all. The Bernstein Method was designed to be understood by anyone, whether you're starting from zero or already have investments. Everything is explained in plain language with actionable steps.</p>
+        </div>
+      </div>
+
+      <div class="faq-item fade-in delay-2">
+        <button class="faq-q" onclick="toggleFaq(this)">
+          <span>What is the refund policy?</span>
+          <span class="faq-icon"></span>
+        </button>
+        <div class="faq-a">
+          <p>Due to the digital nature of the product, all sales are final. We stand behind the quality of The Bernstein Method &mdash; thousands of people have already used it to transform their finances.</p>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ══════ FOOTER ══════ -->
+  <footer class="footer">
+    <div class="footer-links">
+      <a href="terms.html">Terms</a>
+      <a href="refund.html">Refund Policy</a>
+      <a href="privacy.html">Privacy</a>
+    </div>
+    <p class="footer-copy">&copy; 2026 Vivian Bernstein. All rights reserved.</p>
+  </footer>
+
+  <!-- ══════ JS: Intersection Observer + FAQ + Progress ══════ -->
+  <script>
+    // Fade-in on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el));
+
+    // FAQ accordion
+    function toggleFaq(btn) {
+      const item = btn.parentElement;
+      const wasOpen = item.classList.contains('open');
+      // Close all
+      document.querySelectorAll('.faq-item').forEach(i => i.classList.remove('open'));
+      // Toggle clicked
+      if (!wasOpen) item.classList.add('open');
+    }
+
+    // Progress bar animation
+    setTimeout(() => {
+      const fill = document.getElementById('progress-fill');
+      if (fill) fill.style.width = '96.94%';
+    }, 800);
+
+    // ── Dynamic Tier Selection ──
+    const tiers = [
+      { name: 'THE BERNSTEIN METHOD', price: '$27', url: 'https://checkout.dodopayments.com/buy/pdt_0NbRHuk93tfofbnsMP7My?quantity=1&redirect_url=https://thejamesspencer.org' },
+      { name: 'THE COMPLETE SYSTEM', price: '$77', url: 'https://checkout.dodopayments.com/buy/pdt_0NbRK1U7wmZA9kZk7jast?quantity=1&redirect_url=https://thejamesspencer.org' }
+    ];
+
+    let selectedTier = 1; // Default: $77 complete tier
+
+    function selectTier(index) {
+      selectedTier = index;
+      const tier = tiers[index];
+
+      // Update CTA button text and link
+      const ctaBtn = document.getElementById('cta-btn');
+      const ctaText = document.getElementById('cta-text');
+      ctaBtn.href = tier.url;
+      ctaText.innerHTML = 'GET ' + tier.name + ' \u2014 ' + tier.price;
+
+      // Update card selection states
+      const cards = document.querySelectorAll('.price-card');
+      cards.forEach((card, i) => {
+        if (i === index) {
+          card.classList.add('selected');
+        } else {
+          card.classList.remove('selected');
+        }
+      });
+    }
+
+    // Initialize default selection on load
+    selectTier(1);
+  </script>
+
+</body>
+</html>
